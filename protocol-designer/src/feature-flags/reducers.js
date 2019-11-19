@@ -12,7 +12,7 @@ import type { Action } from '../types'
 // whenever the browser has seen the feature flag before and persisted it.
 // Only "never before seen" flags will take on the default values from `initialFlags`.
 const initialFlags: Flags = {
-  PRERELEASE_MODE: false,
+  PRERELEASE_MODE: true, // HACK for user testing. DO NOT MERGE into `edge`!
   OT_PD_ENABLE_MODULES: false,
   OT_PD_DISABLE_MODULE_RESTRICTIONS: false,
   OT_PD_ENABLE_MULTI_GEN2_PIPETTES: false,
