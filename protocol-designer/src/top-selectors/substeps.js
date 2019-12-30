@@ -24,25 +24,33 @@ export const allSubsteps: Selector<AllSubsteps> = createSelector(
     robotStateTimeline,
     _initialRobotState
   ) => {
+    console.log('allSubsteps starting', Date.now())
     const timeline = [
       { robotState: _initialRobotState },
       ...robotStateTimeline.timeline,
     ]
-    return orderedStepIds.reduce((acc: AllSubsteps, stepId, timelineIndex) => {
-      const robotState =
-        timeline[timelineIndex] && timeline[timelineIndex].robotState
+    const result = orderedStepIds.reduce(
+      (acc: AllSubsteps, stepId, timelineIndex) => {
+        const robotState =
+          timeline[timelineIndex] && timeline[timelineIndex].robotState
 
-      const substeps = generateSubsteps(
-        allStepArgsAndErrors[stepId],
-        invariantContext,
-        robotState,
-        stepId
-      )
+        console.log('allSubsteps > generate substeps for', stepId, Date.now())
+        const substeps = generateSubsteps(
+          allStepArgsAndErrors[stepId],
+          invariantContext,
+          robotState,
+          stepId
+        )
+        console.log('generated for', stepId, Date.now())
 
-      return {
-        ...acc,
-        [stepId]: substeps,
-      }
-    }, {})
+        return {
+          ...acc,
+          [stepId]: substeps,
+        }
+      },
+      {}
+    )
+    console.log('done allSubsteps', Date.now())
+    return result
   }
 )

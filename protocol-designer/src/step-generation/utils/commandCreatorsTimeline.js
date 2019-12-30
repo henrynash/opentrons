@@ -13,6 +13,7 @@ export const commandCreatorsTimeline = (
   invariantContext: InvariantContext,
   initialRobotState: RobotState
 ): Timeline => {
+  return { timeline: [] }
   const timeline = commandCreators.reduce(
     (acc: Timeline, commandCreator: CurriedCommandCreator, index: number) => {
       const prevRobotState =

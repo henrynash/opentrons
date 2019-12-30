@@ -366,12 +366,28 @@ export const getSavedStepForms: Selector<*> = createSelector(
 const getOrderedSavedForms: Selector<Array<FormData>> = createSelector(
   getOrderedStepIds,
   getSavedStepForms,
-  (orderedStepIds, savedStepForms) => {
-    return orderedStepIds
+  (orderedStepIds, savedStepForms) =>
+    orderedStepIds
       .map(stepId => savedStepForms[stepId])
       .filter(form => form && form.id != null) // NOTE: for old protocols where stepId could === 0, need to do != null here
-  }
 )
+
+// let hackCache: any = 'HACK_CACHE'
+// const getOrderedSavedForms: Selector<Array<FormData>> = createSelector(
+//   getOrderedStepIds,
+//   getSavedStepForms,
+//   (orderedStepIds, savedStepForms) => {
+//     if (hackCache !== 'HACK_CACHE') return hackCache
+//     const result = orderedStepIds
+//       .map(stepId => savedStepForms[stepId])
+//       .filter(form => form && form.id != null) // NOTE: for old protocols where stepId could === 0, need to do != null here
+//     if (result.length > 1) {
+//       hackCache = result
+//       console.log('hack cache for getOrderedSavedForms', hackCache)
+//     }
+//     return result
+//   }
+// )
 
 // TODO: Ian 2019-01-25 type with hydrated form type
 function _getHydratedForm(
@@ -492,6 +508,11 @@ export const makeGetStepWithId = () => {
   )
 }
 
+function timelog(message: string) {
+  console.log(message, Date.now())
+}
+
+let haxx = null
 export const getArgsAndErrorsByStepId: Selector<{
   [StepIdType]: StepArgsAndErrors,
 }> = createSelector(
@@ -501,16 +522,30 @@ export const getArgsAndErrorsByStepId: Selector<{
     return reduce(
       stepForms,
       (acc, stepForm) => {
+        timelog('starting getArgsAndErrorsByStepId')
         const hydratedForm = _getHydratedForm(stepForm, contextualState)
+        timelog('got hydrated form')
         const errors = _getFormAndFieldErrorsFromHydratedForm(hydratedForm)
+        timelog('got form and field errors from hydrated form')
         const nextStepData = isEmpty(errors)
           ? { stepArgs: stepFormToArgs(hydratedForm) }
           : { errors, stepArgs: null }
+        timelog(
+          errors ? 'has errors, no stepFormToArgs' : 'called stepFormToArgs'
+        )
 
-        return {
+        if (haxx !== null) return haxx
+
+        const result = {
           ...acc,
           [stepForm.id]: nextStepData,
         }
+
+        if (Object.keys(result) > 0) {
+          console.log('getArgsAndErrorsByStepId hack hack', haxx)
+          haxx = result
+        }
+        return result
       },
       {}
     )

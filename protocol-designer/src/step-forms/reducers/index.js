@@ -187,6 +187,9 @@ export const savedStepForms = (
     ? rootState.savedStepForms
     : initialSavedStepFormsState
   switch (action.type) {
+    case 'TEST_STEP_FORM_X': {
+      return { ...savedStepForms }
+    }
     case 'SAVE_STEP_FORM': {
       return {
         ...savedStepForms,

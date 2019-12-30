@@ -23,8 +23,11 @@ export const reduceCommandCreators = (
   invariantContext: InvariantContext,
   initialRobotState: RobotState
 ): CommandCreatorResult => {
+  console.log('starting reduceCommandCreators', Date.now())
+  let updatesTimeDeltas = []
   const result = commandCreators.reduce(
     (prev: CCReducerAcc, reducerFn: CurriedCommandCreator): CCReducerAcc => {
+      // console.log('reduceCommandCreators > inner loop', reducerFn, Date.now())
       if (prev.errors.length > 0) {
         // if there are errors, short-circuit the reduce
         return prev
@@ -40,11 +43,13 @@ export const reduceCommandCreators = (
       }
 
       const allCommands = [...prev.commands, ...next.commands]
+      const prevTime = Date.now()
       const updates = getNextRobotStateAndWarnings(
         allCommands,
         invariantContext,
         initialRobotState
       )
+      updatesTimeDeltas.push(Date.now() - prevTime)
       return {
         ...prev,
         robotState: updates.robotState,
@@ -63,6 +68,7 @@ export const reduceCommandCreators = (
       warnings: [],
     }
   )
+  console.log('done reduceCommandCreators', Date.now(), updatesTimeDeltas)
   if (result.errors.length > 0) {
     return { errors: result.errors }
   }

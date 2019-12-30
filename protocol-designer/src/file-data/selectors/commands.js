@@ -159,6 +159,7 @@ export const getRobotStateTimeline: Selector<StepGeneration.Timeline> = createSe
     // must read directly from localStorage. Once getDisableModuleRestrictions aka "rogue mode"
     // is removed, we can remove this arg to this selector.
   ) => {
+    timelog('starting getRobotStateTimeline')
     const allStepArgs: Array<StepGeneration.CommandCreatorArgs | null> = orderedStepIds.map(
       stepId => {
         return (
@@ -169,12 +170,14 @@ export const getRobotStateTimeline: Selector<StepGeneration.Timeline> = createSe
       }
     )
 
+    timelog('start takeWhile')
     // TODO: Ian 2018-06-14 `takeWhile` isn't inferring the right type
     // $FlowFixMe
     const continuousStepArgs: Array<StepGeneration.CommandCreatorArgs> = takeWhile(
       allStepArgs,
       stepArgs => stepArgs
     )
+    timelog('make curriedCommandCreators')
 
     const curriedCommandCreators = continuousStepArgs.reduce(
       (
@@ -233,15 +236,21 @@ export const getRobotStateTimeline: Selector<StepGeneration.Timeline> = createSe
       []
     )
 
+    timelog('finally call commandCreatorsTimeline')
     const timeline = StepGeneration.commandCreatorsTimeline(
       curriedCommandCreators,
       invariantContext,
       initialRobotState
     )
+    timelog('done timeline')
 
     return timeline
   }
 )
+
+function timelog(message: string) {
+  console.log(message, Date.now())
+}
 
 type WarningsPerStep = {
   [stepId: number | string]: ?Array<StepGeneration.CommandCreatorWarning>,

@@ -75,6 +75,7 @@ export const createFile: BaseState => PDProtocolFile = createSelector(
     labwareDefsByURI,
     modulesEnabled
   ) => {
+    console.log('create file...')
     const { author, description, created } = fileMetadata
     const name = fileMetadata.protocolName || 'untitled'
     const lastModified = fileMetadata.lastModified

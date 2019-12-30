@@ -219,6 +219,7 @@ export const wellHighlightsByLabwareId: Selector<{
     allSubsteps,
     orderedStepIds
   ) => {
+    console.log('wellHighlightsByLabwareId staring', Date.now())
     const timeline = robotStateTimeline.timeline
     const stepId = hoveredStepId
     const timelineIndex = orderedStepIds.findIndex(i => i === stepId)
@@ -235,7 +236,7 @@ export const wellHighlightsByLabwareId: Selector<{
     }
 
     // replace value of each labware with highlighted wells info
-    return mapValues(
+    const result = mapValues(
       robotState.liquidState.labware,
       (
         labwareLiquids: StepGeneration.SingleLabwareLiquidState,
@@ -268,5 +269,7 @@ export const wellHighlightsByLabwareId: Selector<{
         )
       }
     )
+    console.log('done wellHighlightsByLabwareId', Date.now())
+    return result
   }
 )

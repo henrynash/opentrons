@@ -220,6 +220,7 @@ function transferLikeSubsteps(args: {|
   robotState: RobotState,
   stepId: StepIdType,
 |}): ?SourceDestSubstepItem {
+  console.log('transferLikeSubsteps starting', Date.now())
   const { stepArgs, invariantContext, stepId } = args
 
   // Add tips to pipettes, since this is just a "simulation"
@@ -229,6 +230,7 @@ function transferLikeSubsteps(args: {|
     robotState.tipState.pipettes,
     () => true
   )
+  console.log('transferLikeSubsteps > updated tip state', Date.now())
   const { pipette: pipetteId } = stepArgs
 
   const pipetteSpec = invariantContext.pipetteEntities[pipetteId]?.spec
@@ -255,13 +257,14 @@ function transferLikeSubsteps(args: {|
 
   // Multichannel substeps
   if (pipetteSpec.channels > 1) {
+    console.log('transferLikeSubsteps > about to call timeline', Date.now())
     const substepRows: Array<SubstepTimelineFrame> = substepTimeline(
       substepCommandCreator,
       invariantContext,
       robotState,
       pipetteSpec.channels
     )
-
+    console.log('transferLikeSubsteps > about to merge multi rows', Date.now())
     const mergedMultiRows: Array<
       Array<StepItemSourceDestRow>
     > = mergeSubstepRowsMultiChannel({
@@ -279,6 +282,7 @@ function transferLikeSubsteps(args: {|
     }
   } else {
     // single channel
+    console.log('transferLikeSubsteps > about to call timeline', Date.now())
     const substepRows = substepTimeline(
       substepCommandCreator,
       invariantContext,
@@ -286,6 +290,7 @@ function transferLikeSubsteps(args: {|
       1
     )
 
+    console.log('transferLikeSubsteps > about to merge multi rows', Date.now())
     const mergedRows: Array<StepItemSourceDestRow> = mergeSubstepRowsSingleChannel(
       { substepRows, showDispenseVol }
     )
